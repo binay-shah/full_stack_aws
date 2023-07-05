@@ -49,17 +49,14 @@ import fs from 'fs'
 
       filterImageFromURL(image_url).then((path) => {
       console.log(path)
-      res.status(200).send(path)
+      res.status(200).sendFile(path, err => {
+        if(err){
+          deleteLocalFiles([path]);
+        }
+      })
     }).catch((err) => {
       console.log(err)
       res.status(422).send(err)
-    }).finally(() => {
-      let files = fs.readdirSync('/tmp/', {withFileTypes: true})
-      .filter(item => !item.isDirectory())
-      .map(item => item.name).filter((name) => name.startsWith('filtered'))
-      .map((name) => "/tmp/"+name)
-      deleteLocalFiles(files)
-      
     })
     
   });
